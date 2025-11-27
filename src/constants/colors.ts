@@ -1,0 +1,16 @@
+export default {
+  primary: '#3498DB',
+  accent: '#2ECC71',
+  background: '#F5F5F5',
+  text: '#2C3E50',
+  textLight: '#7F8C8D',
+  white: '#FFFFFF',
+  error: '#E74C3C',
+  success: '#27AE60',
+  border: '#BDC3C7',
+  disabled: '#95A5A6',
+  available: '#2ECC71',
+  unavailable: '#BDC3C7',
+  inputBackground: '#FFFFFF',
+  cardShadow: 'rgba(52, 152, 219, 0.15)',
+};

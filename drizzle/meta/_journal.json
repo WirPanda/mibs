@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1764232885696,
+      "tag": "0000_thankful_white_tiger",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1764232940342,
+      "tag": "0001_friendly_human_torch",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1764248960401,
+      "tag": "0002_elite_guardian",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1764250061599,
+      "tag": "0003_even_mauler",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1764250344589,
+      "tag": "0004_absurd_jigsaw",
+      "breakpoints": true
+    }
+  ]
+}
