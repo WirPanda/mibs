@@ -2,15 +2,31 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { user } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { getCurrentUser } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const currentUser = await getCurrentUser(request);
+    // Получаем токен из заголовка Authorization
+    const authHeader = request.headers.get("authorization");
+    const token = authHeader?.replace("Bearer ", "");
     
-    if (!currentUser) {
+    if (!token) {
       return NextResponse.json(
         { error: "Authentication required", code: "AUTH_REQUIRED" },
+        { status: 401 }
+      );
+    }
+
+    // Валидируем токен через better-auth
+    const session = await auth.api.getSession({
+      headers: new Headers({
+        authorization: `Bearer ${token}`
+      })
+    });
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: "Invalid token", code: "INVALID_TOKEN" },
         { status: 401 }
       );
     }
@@ -18,7 +34,7 @@ export async function GET(request: NextRequest) {
     const userProfile = await db
       .select()
       .from(user)
-      .where(eq(user.id, currentUser.id))
+      .where(eq(user.id, session.user.id))
       .limit(1);
 
     if (userProfile.length === 0) {
@@ -40,11 +56,27 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const currentUser = await getCurrentUser(request);
+    // Получаем токен из заголовка Authorization
+    const authHeader = request.headers.get("authorization");
+    const token = authHeader?.replace("Bearer ", "");
     
-    if (!currentUser) {
+    if (!token) {
       return NextResponse.json(
         { error: "Authentication required", code: "AUTH_REQUIRED" },
+        { status: 401 }
+      );
+    }
+
+    // Валидируем токен через better-auth
+    const session = await auth.api.getSession({
+      headers: new Headers({
+        authorization: `Bearer ${token}`
+      })
+    });
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: "Invalid token", code: "INVALID_TOKEN" },
         { status: 401 }
       );
     }
@@ -74,13 +106,13 @@ export async function PATCH(request: NextRequest) {
 
     if (Object.keys(updates).length > 0) {
       updates.updatedAt = new Date();
-      await db.update(user).set(updates).where(eq(user.id, currentUser.id));
+      await db.update(user).set(updates).where(eq(user.id, session.user.id));
     }
 
     const updatedUser = await db
       .select()
       .from(user)
-      .where(eq(user.id, currentUser.id))
+      .where(eq(user.id, session.user.id))
       .limit(1);
 
     return NextResponse.json(updatedUser[0]);

@@ -4,10 +4,18 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useSession, authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 export default function HomePage() {
   const router = useRouter();
   const { data: session, isPending, refetch } = useSession();
+
+  // Debug: выводим сессию в консоль для отладки
+  useEffect(() => {
+    console.log("🔍 Current session:", session);
+    console.log("🔍 User role:", session?.user?.role);
+    console.log("🔍 isPending:", isPending);
+  }, [session, isPending]);
 
   const handleSignOut = async () => {
     const { error } = await authClient.signOut();
@@ -49,7 +57,7 @@ export default function HomePage() {
                     </span>
                   )}
                 </span>
-                {["admin", "moderator", "owner"].includes(session.user.role) && (
+                {session.user.role && ["admin", "moderator", "owner"].includes(session.user.role) && (
                   <button
                     onClick={() => router.push("/admin")}
                     className="bg-yellow-400 text-yellow-900 px-3 md:px-4 py-1.5 md:py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-all text-xs md:text-sm"

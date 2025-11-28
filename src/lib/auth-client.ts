@@ -35,7 +35,6 @@ export function useSession(): SessionData {
 
    const fetchSession = async () => {
       try {
-         // First get the basic session from better-auth
          const res = await authClient.getSession({
             fetchOptions: {
                auth: {
@@ -45,34 +44,37 @@ export function useSession(): SessionData {
             },
          });
          
-         // If session exists, fetch full user data including role
+         // Если есть сессия, загружаем роль из API профиля
          if (res.data?.user) {
-            const token = typeof window !== 'undefined' ? localStorage.getItem("bearer_token") : null;
-            if (token) {
-               const userRes = await fetch('/api/user/me', {
+            try {
+               const profileRes = await fetch('/api/user/profile', {
                   headers: {
-                     Authorization: `Bearer ${token}`,
+                     'Authorization': `Bearer ${localStorage.getItem("bearer_token")}`,
                   },
                });
                
-               if (userRes.ok) {
-                  const userData = await userRes.json();
-                  // Merge user data with session
+               if (profileRes.ok) {
+                  const profileData = await profileRes.json();
+                  // Добавляем роль и другие данные профиля в сессию
                   setSession({
                      ...res.data,
                      user: {
                         ...res.data.user,
-                        ...userData,
-                     },
+                        role: profileData.role,
+                        phone: profileData.phone,
+                        gender: profileData.gender,
+                        image: profileData.image,
+                     }
                   });
                } else {
                   setSession(res.data);
                }
-            } else {
+            } catch (profileErr) {
+               console.error('Failed to fetch profile:', profileErr);
                setSession(res.data);
             }
          } else {
-            setSession(null);
+            setSession(res.data);
          }
          
          setError(null);
