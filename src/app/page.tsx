@@ -33,13 +33,23 @@ export default function HomePage() {
               <>
                 <span className="text-white/90 text-xs md:text-sm flex items-center gap-2">
                   <span className="hidden sm:inline">Привет,</span> {session.user.name}
-                  {session.user.role === "admin" && (
+                  {session.user.role === "owner" && (
                     <span className="bg-yellow-400 text-yellow-900 px-2 py-1 rounded text-xs font-semibold">
-                      Admin
+                      👑 Владелец
+                    </span>
+                  )}
+                  {session.user.role === "admin" && (
+                    <span className="bg-blue-400 text-blue-900 px-2 py-1 rounded text-xs font-semibold">
+                      🔑 Админ
+                    </span>
+                  )}
+                  {session.user.role === "moderator" && (
+                    <span className="bg-green-400 text-green-900 px-2 py-1 rounded text-xs font-semibold">
+                      🛡️ Модератор
                     </span>
                   )}
                 </span>
-                {session.user.role === "admin" && (
+                {["admin", "moderator", "owner"].includes(session.user.role) && (
                   <button
                     onClick={() => router.push("/admin")}
                     className="bg-yellow-400 text-yellow-900 px-3 md:px-4 py-1.5 md:py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-all text-xs md:text-sm"
@@ -78,7 +88,7 @@ export default function HomePage() {
       <div className="text-center space-y-6 md:space-y-8 max-w-2xl mt-16 md:mt-0">
         {/* Logo */}
         <div className="flex justify-center mb-8 md:mb-12">
-          <div className="animate-pulse-scale rounded-full overflow-hidden">
+          <div className="rounded-full overflow-hidden">
             <Image 
               src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/c5ffde93234aaa3019335a52178b26c0-1764232128129.jpeg"
               alt="МИБС Медицинский институт"

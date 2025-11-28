@@ -8,20 +8,16 @@ import { eq } from "drizzle-orm";
 export async function middleware(request: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
   
-  // Защита админ панели - требуется роль admin
+  // Защита админ панели - требуется роль admin, moderator, owner
   if (request.nextUrl.pathname.startsWith("/admin")) {
     if (!session?.user) {
       return NextResponse.redirect(new URL("/login?redirect=/admin", request.url));
     }
     
-    // Получаем роль пользователя из базы данных
-    const [userData] = await db
-      .select({ role: user.role })
-      .from(user)
-      .where(eq(user.id, session.user.id))
-      .limit(1);
+    // Получаем роль из БД
+    const userFromDb = await db.select().from(user).where(eq(user.id, session.user.id)).limit(1);
     
-    if (!userData || userData.role !== "admin") {
+    if (userFromDb.length === 0 || !["admin", "moderator", "owner"].includes(userFromDb[0].role)) {
       return NextResponse.redirect(new URL("/", request.url));
     }
   }
